@@ -29,6 +29,8 @@ def define_SwanSpawner_from(base_class):
 
         lcg_rel_field = 'LCG-rel'
 
+        include_modules_field = 'include-python-modules'
+
         platform_field = 'platform'
 
         user_script_env_field = 'scriptenv'
@@ -89,6 +91,7 @@ def define_SwanSpawner_from(base_class):
             options[self.user_n_cores]          = int(formdata[self.user_n_cores][0])
             options[self.user_memory]           = formdata[self.user_memory][0] + 'G'
             options[self.use_jupyterlab_field]  = formdata.get(self.use_jupyterlab_field, 'unchecked')[0]
+            options[self.include_modules_field]     = formdata.get(self.include_modules_field, 'unchecked')[0]
 
             self.offload = options[self.spark_cluster_field] != 'none'
 
@@ -139,6 +142,12 @@ def define_SwanSpawner_from(base_class):
             if self.user_options[self.use_jupyterlab_field] == 'checked':
                 env.update(dict(
                     SWAN_USE_JUPYTERLAB = 'true'
+                ))
+
+            # Append path of user packages installed on CERNBox to PYTHONPATH
+            if self.user_options[self.include_modules_field] == 'checked':
+                env.update(dict(
+                    SWAN_INCLUDE_MODULES = 'true'
                 ))
 
             # Enable configuration for CERN HTCondor pool
